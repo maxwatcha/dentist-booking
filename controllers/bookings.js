@@ -10,9 +10,15 @@ exports.getBookings = async(req,res,next)=>{
     let query;
     //General users can see only their appointments!
     if(req.user.role !== 'admin'){
-        query = Booking.find({user:req.user.id});
+        query = Booking.find({user:req.user.id}).populate({
+            path: 'dentist',
+            select: 'name exp_year expert_area'
+        });
     }else{ // if you are an admin,you can see all!
-        query=Booking.find();
+        query=Booking.find().populate({
+            path: 'dentist',
+            select: 'name exp_year expert_area'
+        });
     }
     try{
         const bookings = await query;
@@ -38,7 +44,7 @@ exports.getBooking=async (req,res,next)=>{
     try{
         const booking = await Booking.findById(req.params.id).populate({
             path: 'dentist',
-            select: 'name yearofexperience areaofexpertise'
+            select: 'name exp_year expert_area'
         });
         
         if(!booking){
@@ -65,6 +71,7 @@ exports.addBooking= async (req,res,next)=>{
             return res.status(404).json({success:false,message:`No dentist with the id of ${req.params.dentistId}`});
 
         }
+        
         //add user Id to req.body
         req.body.user = req.user.id;
 
@@ -92,7 +99,7 @@ exports.addBooking= async (req,res,next)=>{
 //@desc     Update bookings
 //@route    PUT/api/v1/bookings/:id
 //@access   Private
-exports.updateBookings=async (req,res,next)=>{
+exports.updateBooking=async (req,res,next)=>{
     try{
         let booking = await Booking.findById(req.params.id);
 
@@ -120,7 +127,7 @@ exports.updateBookings=async (req,res,next)=>{
 //@desc     Delete bookings
 //@route    Delete/api/v1/bookings/:id
 //@access   Private
-exports.deleteBookings=async (req,res,next)=>{
+exports.deleteBooking=async (req,res,next)=>{
     try{
         const booking = await Booking.findById(req.params.id);
         if(!booking){
