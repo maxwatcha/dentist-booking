@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const xss=require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const hpp=require('hpp');
-// const cors = require('cors');
+const cors = require('cors');
 // const swaggerJsDoc = require('swagger-jsdoc');
 // const swaggerUI = require('swagger-ui-express');
 
@@ -54,8 +54,8 @@ app.use(helmet());
 //Prevent XSS attacks
 app.use(xss());
 
-// //Enable CORS
-// app.use(cors());
+//Enable CORS
+app.use(cors());
 //rateLimit
 const limiter = rateLimit({
     windowsMs:10*60*1000,//10 mins
@@ -66,14 +66,14 @@ app.use(limiter);
 //route files
 const dentists = require ('./routes/dentists');
 const auth = require('./routes/auth');
-// const appointments = require('./routes/appointments')
+const bookings = require('./routes/bookings')
 
 //Prevent http param pollutions
 app.use(hpp());
 
 app.use('/api/v1/dentists',dentists);
 app.use('/api/v1/auth',auth);
-// app.use('/api/v1/appointments', appointments);
+ app.use('/api/v1/bookings', bookings);
 
 
 
